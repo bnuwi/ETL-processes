@@ -1,0 +1,6 @@
+apache-airflow==2.9.0
+pymongo
+psycopg2-binary
+faker
+pandas
+python-dotenv

@@ -1,0 +1,76 @@
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime
+
+def generate_mongo_data():
+    """Генерация тестовых данных в MongoDB"""
+    from pymongo import MongoClient
+    from faker import Faker
+    from datetime import timedelta
+    import random
+
+    fake = Faker()
+    client = MongoClient('mongodb://root:root@mongodb:27017/')
+    db = client['app_db']
+    
+    db.user_sessions.drop()
+    db.support_tickets.drop()
+    
+    sessions = []
+    for _ in range(1000):
+        user_id = f"user_{random.randint(1, 200)}"
+        start = fake.date_time_between(start_date='-1y', end_date='now')
+        end = start + timedelta(minutes=random.randint(5, 60))
+        sessions.append({
+            "session_id": f"sess_{fake.uuid4()[:8]}",
+            "user_id": user_id,
+            "start_time": start.isoformat() + 'Z',
+            "end_time": end.isoformat() + 'Z',
+            "pages_visited": [fake.uri_path() for _ in range(random.randint(3, 10))],
+            "device": random.choice(["mobile", "desktop"]),
+            "actions": random.choices(["login", "view_product", "add_to_cart", "logout", "purchase"], k=random.randint(2, 8))
+        })
+    db.user_sessions.insert_many(sessions)
+    
+    tickets = []
+    for _ in range(500):
+        user_id = f"user_{random.randint(1, 200)}"
+        created = fake.date_time_between(start_date='-1y', end_date='now')
+        updated = created + timedelta(hours=random.randint(0, 48))
+        tickets.append({
+            "ticket_id": f"ticket_{fake.uuid4()[:8]}",
+            "user_id": user_id,
+            "status": random.choice(["open", "closed", "in_progress"]),
+            "issue_type": random.choice(["payment", "delivery", "product", "account"]),
+            "messages": [
+                {"sender": "user", "message": fake.sentence(), "timestamp": created.isoformat() + 'Z'},
+                {"sender": "support", "message": fake.sentence(), "timestamp": updated.isoformat() + 'Z'}
+            ],
+            "created_at": created.isoformat() + 'Z',
+            "updated_at": updated.isoformat() + 'Z'
+        })
+    db.support_tickets.insert_many(tickets)
+    
+    print(f"Сгенерировано: {len(sessions)} сессий, {len(tickets)} тикетов")
+
+default_args = {
+    'owner': 'student',
+    'depends_on_past': False,
+    'retries': 1,
+}
+
+dag = DAG(
+    'generate_data_dag',
+    default_args=default_args,
+    description='Генерация тестовых данных в MongoDB',
+    schedule_interval=None, 
+    start_date=datetime(2026, 3, 1),
+    catchup=False,
+    tags=['data-gen']
+)
+
+generate_task = PythonOperator(
+    task_id='generate_mongo_data',
+    python_callable=generate_mongo_data,
+    dag=dag
+)
