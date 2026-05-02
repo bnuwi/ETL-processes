@@ -1,0 +1,78 @@
+{
+  "status": "success",
+  "data": {
+    "order_id": "4252",
+    "date": "2020-12-06",
+    "customer": {
+      "id": "9823",
+      "name": "John Doe",
+      "phone": "+1 555 123 4567",
+      "address": {
+        "street": "123 Main St",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94105"
+      }
+    },
+    "restaurant": {
+      "id": "771",
+      "name": "Burrito Palace",
+      "address": {
+        "street": "500 Market St",
+        "city": "San Francisco",
+        "state": "CA",
+        "zip": "94105"
+      }
+    },
+    "delivery": {
+      "type": "courier",
+      "courier_name": "Jane Smith",
+      "courier_phone": "+1 555 987 6543",
+      "eta": "2020-12-06T19:30:00Z",
+      "fee": 4.99,
+      "instructions": "Ring the doorbell twice"
+    },
+    "payment": {
+      "method": "card",
+      "total": 28.47,
+      "currency": "USD"
+    },
+    "items": [
+      {
+        "dish_id": "45271",
+        "name": "Mexican Burrito",
+        "quantity": "2x",
+        "price": 9.99,
+        "addons": [
+          { "name": "Extra cheese", "price": 1.5 },
+          { "name": "Guacamole", "price": 2.0 }
+        ]
+      },
+      {
+        "dish_id": "33110",
+        "name": "Cola",
+        "quantity": "1x",
+        "price": 2.99,
+        "addons": []
+      }
+    ],
+    "status_history": [
+      {
+        "status": "created",
+        "time": "2020-12-06T18:45:00Z"
+      },
+      {
+        "status": "accepted_by_restaurant",
+        "time": "2020-12-06T18:47:00Z"
+      },
+      {
+        "status": "picked_up_by_courier",
+        "time": "2020-12-06T19:10:00Z"
+      },
+      {
+        "status": "delivered",
+        "time": "2020-12-06T19:28:00Z"
+      }
+    ]
+  }
+}
